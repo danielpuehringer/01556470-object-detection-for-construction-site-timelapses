@@ -1,0 +1,2 @@
+# 01556470-object-detection-for-construction-site-timelapses
+This project helps users to find suitable images out of thousands of construction site images. By using a given Object Detection model on an image dataset, massive amounts of images are processed, the position of the bounding boxes is stored and their amount are counted for each image. This helps users to select the most suitable images.
