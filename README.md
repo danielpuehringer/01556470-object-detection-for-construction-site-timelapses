@@ -6,7 +6,10 @@ This project aims to helping users to save time on their generation of timelapse
 
 ### Problem
 Since timelapse videos of construction sites require best suited images (approx. 1200 images for a one minute video) of large image datasets, video producers have to manually view all images and select only a small percentage (approx. 5%) which seem to be the most suitable ones for a timelapse video.
-<img src="https://github.com/user-attachments/assets/4cae9512-cd29-4c16-bc21-a32450c9add4" alt="app-hauptkamera_00Zne_2019-11-19_14_44_19_745" width="50%">
+<img src="https://github.com/user-attachments/assets/4cae9512-cd29-4c16-bc21-a32450c9add4" alt="app-hauptkamera_00Zne_2019-11-19_14_44_19_745" width="25%">
+<img src="[https://github.com/user-attachments/assets/4cae9512-cd29-4c16-bc21-a32450c9add4](https://github.com/user-attachments/assets/910810a8-5e8d-4fa2-87cb-9e04f3165be2)" alt="app-hauptkamera_00Zne_2020-10-22_16_45_03_816" width="25%">
+<img src="[https://github.com/user-attachments/assets/c3ffef6d-be95-4abf-86a9-03aaeb363b7b](https://github.com/user-attachments/assets/910810a8-5e8d-4fa2-87cb-9e04f3165be2)" alt="app-hauptkamera_00Zne_2020-06-09_16_25_29_619" width="25%">
+<img src="[https://github.com/user-attachments/assets/3340654d-d0b2-48f2-8c9b-c196be7a2f5e](https://github.com/user-attachments/assets/910810a8-5e8d-4fa2-87cb-9e04f3165be2)" alt="app-hauptkamera_00Zne_2021-05-11_17_06_10_445" width="25%">
 
 ### General idea and proposed solution
 In order to provide value to users, trained ML models (see below for details) could be applied to pre-select interesting images which indicate a high amount of activity (i.e. many people/construction vehicles on a picture) and help user to find suitable images for a given dataset of construction sites. This pre-selection would reduce the time of carefully previewing and selecting images and therefore reduce the production time of timelapse videos.
