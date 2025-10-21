@@ -6,12 +6,13 @@ This project aims to helping users to save time on their generation of timelapse
 
 ### Problem
 Since timelapse videos of construction sites require best suited images (approx. 1200 images for a one minute video) of large image datasets, video producers have to manually view all images and select only a small percentage (approx. 5%) which seem to be the most suitable ones for a timelapse video.
-<img src="https://github.com/user-attachments/assets/4cae9512-cd29-4c16-bc21-a32450c9add4" alt="app-hauptkamera_00Zne_2019-11-19_14_44_19_745" width="25%">
-![app-hauptkamera_00Zne_2019-11-19_14_44_19_745]([https://github.com/user-attachments/assets/633b53d5-02cc-466a-8d34-4a40ee393643](https://github.com/user-attachments/assets/4cae9512-cd29-4c16-bc21-a32450c9add4))
-![app-hauptkamera_00Zne_2021-05-11_17_06_10_445](https://github.com/user-attachments/assets/633b53d5-02cc-466a-8d34-4a40ee393643)
-![app-hauptkamera_00Zne_2020-10-22_16_45_03_816](https://github.com/user-attachments/assets/e285c8b6-f40f-4689-8fdd-29f893d98fea)
-![app-hauptkamera_00Zne_2020-06-09_16_25_29_619](https://github.com/user-attachments/assets/e6e43f10-921e-45b6-a15a-e77464118f9c)
 
+### Image data (examples)
+<img src="https://github.com/user-attachments/assets/4cae9512-cd29-4c16-bc21-a32450c9add4" alt="app-hauptkamera_00Zne_2019-11-19_14_44_19_745" width="25%">
+
+![app-hauptkamera_00Zne_2020-06-09_16_25_29_619](https://github.com/user-attachments/assets/e6e43f10-921e-45b6-a15a-e77464118f9c)
+![app-hauptkamera_00Zne_2020-10-22_16_45_03_816](https://github.com/user-attachments/assets/e285c8b6-f40f-4689-8fdd-29f893d98fea)
+![app-hauptkamera_00Zne_2021-05-11_17_00_59_886](https://github.com/user-attachments/assets/469b1897-0846-4d1d-9c61-9bef61afe04a)
 
 ### General idea and proposed solution
 In order to provide value to users, trained ML models (see below for details) could be applied to pre-select interesting images which indicate a high amount of activity (i.e. many people/construction vehicles on a picture) and help user to find suitable images for a given dataset of construction sites. This pre-selection would reduce the time of carefully previewing and selecting images and therefore reduce the production time of timelapse videos.
@@ -62,4 +63,8 @@ The freshly trained model should not only be able detect objects, but also inten
   - Presentation rehearsal
 
 ## Scientific literature
-
+- Papers from the lecture on CNNs
+- [Faster R‑CNN: Towards Real‑Time Object Detection with Region Proposal Networks (Ren et al., 2015)](https://arxiv.org/abs/1506.01497)
+- [R‑FCN: Object Detection via Region‐based Fully Convolutional Networks (Dai et al., 2016)](https://arxiv.org/abs/1605.06409)
+- [CNN Based 2D Object Detection Techniques: A Review (Zhao et al., 2024)](https://www.frontiersin.org/journals/computer-science/articles/10.3389/fcomp.2025.1437664/full)
+- [LeYOLO: Lightweight, Scalable and Efficient CNN Architecture for Object Detection (Hollard et al., 2024)](https://arxiv.org/html/2406.14239v1)
