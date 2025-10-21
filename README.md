@@ -20,7 +20,7 @@ In order to provide value to users, trained ML models (see below for details) co
 ## Project Details:
 ### Project type: Bring your own data
 There are four categories from which to choose from:
-- **Bring your own data: Provide a suitable dataset and annotate them for supervised learning**
+- **Bring your own data: Provide a suitable dataset and annotate them for supervised learning** (this is my chosen type)
 - Bring your own method: re-implement a neural network architecture for a given dataset to improve results
 - Beat the classics: solve an existing problem (where deep learning is not used) by applying deep learning to do the same thing and try to improve results
 - Beat the stars: Implement a new deep learning algorithm which can be found in scientific papers and try to beat the state of the art
