@@ -12,10 +12,16 @@ from torchvision import models, transforms
 
 
 # -------------------------
+# Constants (your camera is fixed)
+# -------------------------
+IMG_W = 1280.0
+IMG_H = 960.0
+
+
+# -------------------------
 # Helpers
 # -------------------------
 def parse_binary_label(value) -> int:
-    # Expect 0/1 in CSV, but be robust.
     if pd.isna(value):
         raise ValueError("Label value is NaN")
     if isinstance(value, str):
@@ -35,7 +41,6 @@ def find_image_path(images_dir: str, image_name: str) -> str:
     image_name = str(image_name).strip()
     base, ext = os.path.splitext(image_name)
 
-    # If CSV already contains extension, try directly.
     candidates = [image_name] if ext else [image_name + e for e in
                                           [".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff", ".webp"]]
 
@@ -44,7 +49,6 @@ def find_image_path(images_dir: str, image_name: str) -> str:
         if os.path.exists(p):
             return p
 
-    # Fallback scan
     for fn in os.listdir(images_dir):
         if fn.startswith(image_name + "."):
             p = os.path.join(images_dir, fn)
@@ -57,32 +61,19 @@ def find_image_path(images_dir: str, image_name: str) -> str:
 
 
 def safe_load_boxes(boxes_str: str):
-    """
-    bounding_boxes cell is a JSON list. Sometimes it may contain doubled quotes.
-    Return list[dict].
-    """
     if pd.isna(boxes_str) or str(boxes_str).strip() == "":
         return []
-
     s = str(boxes_str).strip()
-
-    # Common CSV escaping artifact: "" -> "
-    # If json.loads fails, try this normalization.
     try:
         return json.loads(s)
     except json.JSONDecodeError:
         try:
             return json.loads(s.replace('""', '"'))
         except json.JSONDecodeError:
-            # Give up gracefully: treat as empty
             return []
 
 
 def label_to_onehot(lbl: str):
-    """
-    Encode box label into 3 dims:
-      [person, vehicle, other]
-    """
     s = (lbl or "").strip().lower()
     if s == "person":
         return (1.0, 0.0, 0.0)
@@ -91,17 +82,13 @@ def label_to_onehot(lbl: str):
     return (0.0, 0.0, 1.0)
 
 
-def encode_boxes_fixed(boxes, img_w: float, img_h: float, max_boxes: int):
+def encode_boxes_fixed(boxes, max_boxes: int):
     """
     Fixed-length vector for bounding boxes:
     For top-K boxes (by score desc), each contributes:
-      [x1/W, y1/H, x2/W, y2/H, score, onehot_person, onehot_vehicle, onehot_other]  => 8 dims
+      [x1/W, y1/H, x2/W, y2/H, score, onehot_person, onehot_vehicle, onehot_other] => 8 dims
     Total dims = max_boxes * 8
     """
-    if img_w <= 0 or img_h <= 0:
-        img_w, img_h = 1.0, 1.0
-
-    # Sort by score descending
     def score_of(b):
         try:
             return float(b.get("score", 0.0))
@@ -117,22 +104,28 @@ def encode_boxes_fixed(boxes, img_w: float, img_h: float, max_boxes: int):
             bbox = [0, 0, 0, 0]
 
         x1, y1, x2, y2 = [float(v) if v is not None else 0.0 for v in bbox]
-        x1 /= img_w
-        x2 /= img_w
-        y1 /= img_h
-        y2 /= img_h
+        x1 /= IMG_W
+        x2 /= IMG_W
+        y1 /= IMG_H
+        y2 /= IMG_H
 
         sc = score_of(b)
         oh = label_to_onehot(b.get("label", ""))
 
         feats.extend([x1, y1, x2, y2, sc, *oh])
 
-    # Pad
     need = max_boxes * 8 - len(feats)
     if need > 0:
         feats.extend([0.0] * need)
 
     return feats
+
+
+def prf_from_counts(tp: int, fp: int, fn: int):
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0.0
+    return precision, recall, f1
 
 
 # -------------------------
@@ -171,18 +164,16 @@ class InterestMultiModalDataset(Dataset):
 
         img_path = find_image_path(self.images_dir, image_name)
         image = Image.open(img_path).convert("RGB")
-        w, h = image.size
 
-        # Numeric features (use ALL numeric columns explicitly)
+        # Numeric features
         num_person = float(row["num_person"])
         num_vehicles = float(row["num_vehicles"])
         avg_person_conf = float(row["avg_person_conf"])
         total_boxes = float(row["total_boxes"])
 
         boxes = safe_load_boxes(row["bounding_boxes"])
-        box_feats = encode_boxes_fixed(boxes, img_w=float(w), img_h=float(h), max_boxes=self.max_boxes)
+        box_feats = encode_boxes_fixed(boxes, max_boxes=self.max_boxes)
 
-        # Final metadata vector
         meta = [num_person, num_vehicles, avg_person_conf, total_boxes] + box_feats
         meta = torch.tensor(meta, dtype=torch.float32)
 
@@ -200,7 +191,7 @@ class ResNet50WithMetadata(nn.Module):
         super().__init__()
 
         backbone = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
-        backbone.fc = nn.Identity()  # outputs 2048-dim features
+        backbone.fc = nn.Identity()  # -> 2048
         self.backbone = backbone
 
         if freeze_backbone:
@@ -223,14 +214,14 @@ class ResNet50WithMetadata(nn.Module):
         )
 
     def forward(self, x_img, x_meta):
-        img_feat = self.backbone(x_img)          # (B, 2048)
-        meta_feat = self.meta_net(x_meta)        # (B, 64)
+        img_feat = self.backbone(x_img)
+        meta_feat = self.meta_net(x_meta)
         fused = torch.cat([img_feat, meta_feat], dim=1)
         return self.head(fused)
 
 
 # -------------------------
-# Train / Eval
+# Train / Eval (adds PRF1)
 # -------------------------
 def run_epoch(model, loader, device, criterion, optimizer=None):
     is_train = optimizer is not None
@@ -239,6 +230,9 @@ def run_epoch(model, loader, device, criterion, optimizer=None):
     total_loss = 0.0
     correct = 0
     total = 0
+
+    # Counts for positive class (label=1)
+    tp = fp = fn = tn = 0
 
     for imgs, meta, labels in loader:
         imgs = imgs.to(device)
@@ -257,21 +251,40 @@ def run_epoch(model, loader, device, criterion, optimizer=None):
 
         total_loss += float(loss.item()) * imgs.size(0)
         preds = torch.argmax(logits, dim=1)
+
         correct += int((preds == labels).sum().item())
         total += imgs.size(0)
 
-    return total_loss / max(1, total), correct / max(1, total)
+        # Update confusion counts for class 1
+        tp += int(((preds == 1) & (labels == 1)).sum().item())
+        fp += int(((preds == 1) & (labels == 0)).sum().item())
+        fn += int(((preds == 0) & (labels == 1)).sum().item())
+        tn += int(((preds == 0) & (labels == 0)).sum().item())
+
+    avg_loss = total_loss / max(1, total)
+    acc = correct / max(1, total)
+    precision, recall, f1 = prf_from_counts(tp, fp, fn)
+
+    metrics = {
+        "loss": avg_loss,
+        "acc": acc,
+        "precision_pos": precision,
+        "recall_pos": recall,
+        "f1_pos": f1,
+        "tp": tp, "fp": fp, "fn": fn, "tn": tn
+    }
+    return metrics
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--images-dir", required=True, help="Directory containing images")
-    parser.add_argument("--csv-path", required=True, help="labels.csv with the NEW schema")
+    parser.add_argument("--images-dir", required=True)
+    parser.add_argument("--csv-path", required=True)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--num-workers", type=int, default=2)
-    parser.add_argument("--max-boxes", type=int, default=10, help="Top-K boxes to encode from bounding_boxes")
-    parser.add_argument("--freeze-backbone", action="store_true", help="Freeze ResNet backbone (default: False)")
+    parser.add_argument("--max-boxes", type=int, default=10)
+    parser.add_argument("--freeze-backbone", action="store_true", help="Freeze ResNet backbone")
     parser.add_argument("--lr", type=float, default=1e-3)
     args = parser.parse_args()
 
@@ -295,7 +308,7 @@ def main():
         max_boxes=args.max_boxes,
     )
 
-    meta_dim = 4 + args.max_boxes * 8  # 4 numeric + (K boxes * 8 dims per box)
+    meta_dim = 4 + args.max_boxes * 8
 
     val_size = max(1, int(0.2 * len(dataset)))
     train_size = len(dataset) - val_size
@@ -310,13 +323,15 @@ def main():
     optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=args.lr)
 
     for epoch in range(args.epochs):
-        tr_loss, tr_acc = run_epoch(model, train_loader, device, criterion, optimizer=optimizer)
-        va_loss, va_acc = run_epoch(model, val_loader, device, criterion, optimizer=None)
+        tr = run_epoch(model, train_loader, device, criterion, optimizer=optimizer)
+        va = run_epoch(model, val_loader, device, criterion, optimizer=None)
 
         print(
             f"Epoch {epoch+1:02d}/{args.epochs} | "
-            f"Train loss {tr_loss:.4f} acc {tr_acc:.3f} | "
-            f"Val loss {va_loss:.4f} acc {va_acc:.3f}"
+            f"Train: loss {tr['loss']:.4f} acc {tr['acc']:.3f} "
+            f"P {tr['precision_pos']:.3f} R {tr['recall_pos']:.3f} F1 {tr['f1_pos']:.3f} | "
+            f"Val: loss {va['loss']:.4f} acc {va['acc']:.3f} "
+            f"P {va['precision_pos']:.3f} R {va['recall_pos']:.3f} F1 {va['f1_pos']:.3f}"
         )
 
     os.makedirs("models", exist_ok=True)

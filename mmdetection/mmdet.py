@@ -4,8 +4,8 @@ inputMicro = 'input/testset-micro'
 input_DataSetMedium = 'input/testset-medium'
 
 #Info for test-image.jpg: this image refers to original name 'app-hauptkamera_00Zne_2021-04-29_09_45_54_496.jpg'
-inputForTesting = 'input/testset-for-testing'
-outputForTesting = 'outputs/testset-for-testing'
+inputForTesting = 'input/test-dataset'
+outputForTesting = 'outputs/test-dataset-results'
 
 modelTiny = 'rtmdet_tiny_8xb32-300e_coco.py'
 weightsTiny = 'rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth'
