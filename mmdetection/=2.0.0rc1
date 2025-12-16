@@ -1,0 +1,6 @@
+Found existing installation: mmcv-lite 2.2.0
+Uninstalling mmcv-lite-2.2.0:
+  Would remove:
+    /home/daniel/miniconda3/envs/openmmlab/lib/python3.8/site-packages/mmcv_lite-2.2.0.dist-info/*
+Proceed (Y/n)? Your response ('mim install "mmcv>=2.0.0"') was not one of the expected responses: y, n, 
+Proceed (Y/n)? 
