@@ -1,0 +1,10 @@
+# Ignore everything in datasets
+datasets/*
+
+# Re-allow the directory structure
+!datasets/
+!datasets/for-testing/
+!datasets/for-testing/**
+
+# Model weights --> huge file
+model/*.pth
