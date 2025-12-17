@@ -5,6 +5,9 @@ datasets/*
 !datasets/
 !datasets/test-dataset/
 !datasets/test-dataset/**
+!datasets/medium/labels.csv
+!datasets/medium/parse_pred.py
+!datasets/medium/generate_labels_csv.py
 
 # Model weights --> huge file
 model/*.pth
