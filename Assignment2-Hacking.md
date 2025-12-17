@@ -3,6 +3,8 @@ A detailed technical workflow can be found in README.md, here is a brief overvie
 
 I chose the "Bring your own data" approach:
 
+**Here is a link to the dataset and to my large model files:** [Dropbox: Large files from project](https://www.dropbox.com/scl/fo/lxhoqpkq92szqxygj1564/AMBnRrU8rcyKcxuMHnb4j9g?rlkey=bdcnr2hto9ao7dwjpjwchjs1m&st=zff5o0dj&dl=0) 
+
 If you want to reproduce my work, this is how it's done:
 1. Use MMDet model to run object detection of medium dataset
 2. Generate a labels.csv file by processing the output of the model above
