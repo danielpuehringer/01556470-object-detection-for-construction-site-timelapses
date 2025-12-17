@@ -3,8 +3,8 @@ datasets/*
 
 # Re-allow the directory structure
 !datasets/
-!datasets/for-testing/
-!datasets/for-testing/**
+!datasets/test-dataset/
+!datasets/test-dataset/**
 
 # Model weights --> huge file
 model/*.pth
