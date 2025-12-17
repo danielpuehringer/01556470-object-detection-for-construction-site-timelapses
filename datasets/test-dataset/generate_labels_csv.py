@@ -22,8 +22,8 @@ import os
 from parse_pred import parse_pred_file
 
 
-IMAGES_DIR = "original"
-PREDS_DIR = "preds"
+IMAGES_DIR = "test-dataset-input"
+PREDS_DIR = "test-dataset-results/preds"
 OUTPUT_CSV = "labels.csv"
 
 # Keep consistent with parse_pred defaults
