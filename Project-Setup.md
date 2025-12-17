@@ -13,7 +13,7 @@
       - Install MIM and MMEngine, MMCV
       - Verify installation
 
-## Project Workflow
+# Project Workflow (semi-automated with human in the loop)
 1. Use MMDet to run object detection on images
    - This generates a /vis and a /preds folder and a file for each image
    - /vis contains images with bounding boxes drawn on them --> this folder is just for you to visually verify the detection results
@@ -22,11 +22,18 @@
 3. Use the generated labels.csv file to train a new ResNet50 model using resnet50.py
    - Run the model training script by executing the following in
     ```bash
-    python model/resnet50.py \
-      --images-dir ./datasets/medium/original \
-      --csv-path ./datasets/medium/labels.csv \
+    python resnet50.py \
+      --images-dir ../datasets/medium/original \
+      --csv-path ../datasets/medium/labels.csv \
       --epochs 30 \
       --batch-size 8 \
       --max-boxes 10 \
       --freeze-backbone
     ```
+4. The training will generate a model file in the outputs/ folder and look like this:
+```text
+Epoch 30/30 | Training: train-loss 0.0798, train-accuracy 0.967 train-precision 0.895, train-recall 0.942, train-F1 0.918 | Validation: val-loss 0.2196, val-accuracy 0.954 val-precision 0.857 val-recall 0.923 val-F1 0.889
+Saved: models/resnet50_fused_image_meta.pth
+```
+
+This the end of the project setup. Since this "Bring your data" approach ends with running a simple neural network, no further inference is planned.
