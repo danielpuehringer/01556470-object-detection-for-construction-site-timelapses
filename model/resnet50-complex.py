@@ -12,7 +12,7 @@ from torchvision import models, transforms
 
 
 # -------------------------
-# Constants (your camera is fixed)
+# Constants (the camera is fixed on the construction site and images always have the same resolution)
 # -------------------------
 IMG_W = 1280.0
 IMG_H = 960.0
@@ -129,7 +129,7 @@ def prf_from_counts(tp: int, fp: int, fn: int):
 
 
 # -------------------------
-# Dataset (NEW CSV ONLY)
+# Dataset --> labels.csv
 # -------------------------
 class InterestMultiModalDataset(Dataset):
     REQUIRED_COLS = [
@@ -265,6 +265,7 @@ def run_epoch(model, loader, device, criterion, optimizer=None):
     acc = correct / max(1, total)
     precision, recall, f1 = prf_from_counts(tp, fp, fn)
 
+    # these metrics are printed for each epoch!
     metrics = {
         "loss": avg_loss,
         "acc": acc,
@@ -328,10 +329,10 @@ def main():
 
         print(
             f"Epoch {epoch+1:02d}/{args.epochs} | "
-            f"Train: loss {tr['loss']:.4f} acc {tr['acc']:.3f} "
-            f"P {tr['precision_pos']:.3f} R {tr['recall_pos']:.3f} F1 {tr['f1_pos']:.3f} | "
-            f"Val: loss {va['loss']:.4f} acc {va['acc']:.3f} "
-            f"P {va['precision_pos']:.3f} R {va['recall_pos']:.3f} F1 {va['f1_pos']:.3f}"
+            f"Training: train-loss {tr['loss']:.4f}, train-accuracy {tr['acc']:.3f} "
+            f"train-precision {tr['precision_pos']:.3f}, train-recall {tr['recall_pos']:.3f}, train-F1 {tr['f1_pos']:.3f} | "
+            f"Validation: val-loss {va['loss']:.4f}, val-accuracy {va['acc']:.3f} "
+            f"val-precision {va['precision_pos']:.3f} val-recall {va['recall_pos']:.3f} val-F1 {va['f1_pos']:.3f}"
         )
 
     os.makedirs("models", exist_ok=True)
