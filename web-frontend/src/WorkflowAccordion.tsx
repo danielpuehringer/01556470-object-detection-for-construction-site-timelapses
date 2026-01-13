@@ -8,6 +8,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Box from '@mui/material/Box';
+import JSONScreenshot from './assets/appl-dl-json.png';
 
 
 function WorkflowAccordion() {
@@ -17,14 +18,20 @@ function WorkflowAccordion() {
     });
     const [expanded, setExpanded] = React.useState(false);
     const [firstImageUrl, setFirstImageUrl] = React.useState("");
+    const [secondImageUrl, setSecondImageUrl] = React.useState("");
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
     const handleFirstStep = async () => {
         const response = await api.getInputImageUrl("2019-09-17_13_33_03_497.jpg");
-        //response has field url
         setFirstImageUrl(response);
+        console.log(response);
+    }
+
+    const handleSecondStep = async () => {
+        const response = await api.getOutputImageUrl("2019-09-17_13_33_03_497.jpg");
+        setSecondImageUrl(response);
         console.log(response);
     }
 
@@ -40,7 +47,7 @@ function WorkflowAccordion() {
                         Step 1
                     </Typography>
                     <Typography component="span" sx={{color: 'text.secondary'}}>
-                        Gather initial dataset
+                        Bring your own data - Gather initial dataset
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -67,11 +74,11 @@ function WorkflowAccordion() {
                             }}
                         >
                             <Box>
-                            <ul>
-                                <li>Retrieve Data from TimeLapse Robot</li>
-                                <li>Reduced images: 1000 instead of 50000+</li>
-                            </ul>
-                        </Box>
+                                <ul>
+                                    <li>Retrieve Data from TimeLapse Robot</li>
+                                    <li>Reduced images: 1000 instead of 50000+</li>
+                                </ul>
+                            </Box>
                         </Box>
                         <Button
                             color="primary"
@@ -96,18 +103,68 @@ function WorkflowAccordion() {
                     id="panel2bh-header"
                 >
                     <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
-                        Users
+                        Step 2
                     </Typography>
                     <Typography component="span" sx={{color: 'text.secondary'}}>
-                        You are currently not an owner
+                        Running external object detection model (MMDet)
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Donec placerat, lectus sed mattis semper, neque lectus feugiat lectus,
-                        varius pulvinar diam eros in elit. Pellentesque convallis laoreet
-                        laoreet.
+                        {secondImageUrl &&
+                            <>
+                                <Box
+                                    component="img"
+                                    src={secondImageUrl}
+                                    alt="First Step Image"
+                                    sx={{
+                                        width: "100%",
+                                        height: "auto",
+                                        maxWidth: 600,
+                                        display: 'block',
+                                        mx: 'auto',
+                                        borderRadius: 2,
+                                    }}
+                                />
+                                <Box
+                                    sx={{
+                                            textAlign: 'left',
+                                            justifyContent: 'start',
+                                        }}
+                                >
+                                    <pre>
+                                  {`{
+                                    "labels": [0, 0, 0, 7, 13, ...],
+                                    "scores": [
+                                      0.7898109555244446,
+                                      0.6911609768867493,
+                                      0.649942934513092,
+                                      0.5002145171165466,
+                                      0.4103165566921234,
+                                      ...
+                                    ],
+                                    "bboxes": [
+                                      [428.451843261, 538.679199, 489.352966308, 662.982123],[...],...
+                                    ]
+                                  }`}
+                                </pre>
+                                </Box>
+                            </>
+                        }
                     </Typography>
+                    <Button
+                        color="primary"
+                        variant="contained"
+                        onClick={() => {
+                            handleSecondStep();
+                        }}
+                        sx={{
+                            m: 2,
+                        }}
+                        disabled={!!secondImageUrl}
+                    >
+                        Finish step 2
+                    </Button>
                 </AccordionDetails>
             </Accordion>
             <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
@@ -117,16 +174,29 @@ function WorkflowAccordion() {
                     id="panel3bh-header"
                 >
                     <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
-                        Advanced settings
+                        Step 3
                     </Typography>
                     <Typography component="span" sx={{color: 'text.secondary'}}>
-                        Filtering has been entirely disabled for whole web server
+                        Analyze output
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                        Understand how this can be useful...
+                        <Box
+                                    component="img"
+                                    src={JSONScreenshot}
+                                    alt="First Step Image"
+                                    sx={{
+                                        width: "100%",
+                                        height: "auto",
+                                        maxWidth: 600,
+                                        display: 'block',
+                                        mx: 'auto',
+                                        borderRadius: 2,
+                                    }}
+                                />
+
                     </Typography>
                 </AccordionDetails>
             </Accordion>
@@ -137,7 +207,108 @@ function WorkflowAccordion() {
                     id="panel4bh-header"
                 >
                     <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
-                        Personal data
+                        Step 4
+                    </Typography>
+                    <Typography component="span" sx={{color: 'text.secondary'}}>
+                        Define decision criteria for interesting images
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Box>
+                                <h3>What makes an interesting image?</h3>
+                                <ul>
+                                    <li>At least 2 people on image OR</li>
+                                    <li>At least 1 person AND</li>
+                                    <li>Good weather conditions</li>
+                                </ul>
+                            </Box>
+                        </Box>
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+
+
+            <Accordion expanded={expanded === 'panel5'} onChange={handleChange('panel5')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel5bh-content"
+                    id="panel5bh-header"
+                >
+                    <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
+                        Step 5 (//TODO)
+                    </Typography>
+                    <Typography component="span" sx={{color: 'text.secondary'}}>
+                        Analyze label.csv
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
+                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            
+            <Accordion expanded={expanded === 'panel6'} onChange={handleChange('panel6')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel6bh-content"
+                    id="panel6bh-header"
+                >
+                    <Typography component="span" sx={{width: '33%', flexShrink: 0, fontWeight: 'bold'}}>
+                        Step 6
+                    </Typography>
+                    <Typography component="span" sx={{color: 'text.secondary', fontWeight: 'bold'}}>
+                        Label data manually (core of project!)
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
+                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+            
+            <Accordion expanded={expanded === 'panel7'} onChange={handleChange('panel7')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel7bh-content"
+                    id="panel7bh-header"
+                >
+                    <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
+                        Step 7
+                    </Typography>
+                    <Typography component="span" sx={{color: 'text.secondary'}}>
+                        Find suitable ML model and train it
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <Typography>
+                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
+                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                    </Typography>
+                </AccordionDetails>
+            </Accordion>
+
+            <Accordion expanded={expanded === 'panel8'} onChange={handleChange('panel8')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon/>}
+                    aria-controls="panel8bh-content"
+                    id="panel8bh-header"
+                >
+                    <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
+                        Step 8
+                    </Typography>
+                    <Typography component="span" sx={{color: 'text.secondary'}}>
+                        Run model on new data
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
