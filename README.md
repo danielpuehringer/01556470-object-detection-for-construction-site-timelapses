@@ -37,3 +37,11 @@ Saved: models/resnet50_fused_image_meta.pth
 ```
 
 This the end of the project setup. Since this "Bring your data" approach ends with running a simple neural network, no further inference is planned.
+
+# Run prototype:
+To run the React prototype, follow these steps:
+1. Install the latest version of Node.js from [nodejs.org](https://nodejs.org/) and NPM (Node Package Manager).
+2. Navigate into directory /web-frontend
+3. Install node modules by running 'npm install'
+4. Start the development server by running 'npm run dev'
+5. Open your web browser and go to 'http://localhost:5173' to view the application.
