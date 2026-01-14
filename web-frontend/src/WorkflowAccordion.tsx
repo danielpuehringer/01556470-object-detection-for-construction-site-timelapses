@@ -177,7 +177,7 @@ function WorkflowAccordion() {
                         Step 3
                     </Typography>
                     <Typography component="span" sx={{color: 'text.secondary'}}>
-                        Analyze output
+                        Analyze output from MMDet
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -242,16 +242,16 @@ function WorkflowAccordion() {
                     id="panel5bh-header"
                 >
                     <Typography component="span" sx={{width: '33%', flexShrink: 0}}>
-                        Step 5 (//TODO)
+                        Step 5
                     </Typography>
                     <Typography component="span" sx={{color: 'text.secondary'}}>
-                        Analyze label.csv
+                        Generate label.csv
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                        label.csv is generated based on decision criteria from Step 4 and preds file from step 2.
+                        This label.csv is the base for future ML model training
                     </Typography>
                 </AccordionDetails>
             </Accordion>
@@ -271,8 +271,40 @@ function WorkflowAccordion() {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <Box>
+                                <h3>Previous to this step I already had:</h3>
+                                <ul>
+                                    <li>1000 raw images</li>
+                                    <li>1000 images with object detection</li>
+                                    <li>A label.csv file with necessary criteria (number of persons, vehicles,...) which helped to define criteria for interesting images</li>
+                                    <li>The label.csv file prefilled the "interesting" column for all images as 0 (i.e. not interesting)</li>
+                                </ul>
+                            </Box>
+                            <Box>
+                                <h3>Goal of this task</h3>
+                                <ul>
+                                    <li>Manually label all 1000 images and consider shortcuts</li>
+                                    <li>Potential shortcut: Label all images with at least 2 persons as interesting</li>
+                                    <li>Potential shortcut: Only look at images with at least 1 person and check weather condition</li>
+                                    <li>Potential shortcut: Look at images with at least 1 vehicle</li>
+                                    <li>Potential shortcut: Label all other images as "not interesting"</li>
+                                </ul>
+                            </Box>
+                            <Box>
+                                <h3>Result of this task</h3>
+                                <ul>
+                                    <li>Updated version of label.csv</li>
+                                    <li>label.csv can be used for further processing</li>
+                                </ul>
+                            </Box>
+                        </Box>
                     </Typography>
                 </AccordionDetails>
             </Accordion>
@@ -292,8 +324,23 @@ function WorkflowAccordion() {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <Box>
+                                <h3>Key aspects of this task</h3>
+                                <ul>
+                                    <li>Research which approach will be better: train model from scratch or use pre trained model</li>
+                                    <li>Asked professor for insights</li>
+                                    <li>Decision: Pre trained ResNet-50</li>
+                                    <li>Enhancement: Researched how to optimize it (freeze backbone, etc.)</li>
+                                </ul>
+                            </Box>
+                        </Box>
                     </Typography>
                 </AccordionDetails>
             </Accordion>
@@ -313,8 +360,34 @@ function WorkflowAccordion() {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <Box>
+                                <h3>Results of model:</h3>
+                                <pre
+                                    sx={{
+                                        width: '100%',
+                                        maxWidth: "100px",
+                                        textAlign: 'left',
+                                        marginLeft: '0',
+                                    }}
+                                >
+{`
+Epoch 01/30 | Training: train-loss 0.3571, train-accuracy 0.855 train-precision 0.738, train-recall 0.403, train-F1 0.521
+| Validation: val-loss 0.1474, val-accuracy 0.944 val-precision 0.850 val-recall 0.872 val-F1 0.861
+Epoch 10/30 | Training: train-loss 0.0688, train-accuracy 0.972 train-precision 0.902, train-recall 0.961, train-F1 0.931
+| Validation: val-loss 0.1900, val-accuracy 0.934 val-precision 0.861 val-recall 0.795 val-F1 0.827
+Epoch 30/30 | Training: train-loss 0.0798, train-accuracy 0.967 train-precision 0.895, train-recall 0.942, train-F1 0.918
+| Validation: val-loss 0.2196, val-accuracy 0.954 val-precision 0.857 val-recall 0.923 val-F1 0.889
+`}
+                                </pre>
+                            </Box>
+                        </Box>
                     </Typography>
                 </AccordionDetails>
             </Accordion>
